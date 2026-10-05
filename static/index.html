@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lia AI - RAG Knowledge Assistant</title>
+    <meta name="description" content="Intelligent, versatile AI Knowledge & Document Assistant powered by LangChain, Google Gemini, and Supabase pgvector.">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for fast markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Header Bar -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-group">
+                <div class="logo-badge">✨</div>
+                <div class="logo-text">
+                    <h1>Lia AI Assistant</h1>
+                    <p>Python LangChain &bull; Supabase pgvector</p>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-tag" id="dbStatusTag">
+                    <span class="status-dot"></span>
+                    <span id="dbStatusText">Connected: pgvector</span>
+                </div>
+                <div class="status-tag">
+                    <span id="modelStatusText">⚡ Gemini 3.5 Flash Lite</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        
+        <!-- Left Sidebar: PDF Ingestion & Session Controls -->
+        <aside class="sidebar">
+            
+            <!-- Document Ingestion Card -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2>📄 Document Knowledge Base</h2>
+                </div>
+                <div class="card-body">
+                    <div class="dropzone" id="pdfDropzone">
+                        <div class="dropzone-icon">📥</div>
+                        <div class="dropzone-text" id="dropzoneText">Drag & Drop PDF or Click to Browse</div>
+                        <div class="dropzone-hint">Supports up to 50MB PDFs</div>
+                        <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                    </div>
+
+                    <div id="selectedFileInfo" style="display: none; margin-top: 10px; font-size: 0.8rem; color: #c7d2fe;">
+                        <span id="selectedFileName"></span> (<span id="selectedFileSize"></span>)
+                    </div>
+
+                    <button class="btn-upload" id="uploadBtn" disabled>
+                        <span>Upload & Index into pgvector</span>
+                    </button>
+
+                    <div class="upload-status" id="uploadStatus">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="uploadProgressFill"></div>
+                        </div>
+                        <div id="uploadStatusMessage">Processing chunks...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation & Memory Management Card -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2>🧠 Chat Memory</h2>
+                </div>
+                <div class="card-body">
+                    <div class="session-group">
+                        <label class="session-label" for="conversationIdInput">Active Session ID</label>
+                        <input type="text" id="conversationIdInput" class="input-field" value="default-session" placeholder="e.g. user-session-1">
+                    </div>
+                    
+                    <button class="btn-secondary btn-danger-outline" id="clearMemoryBtn" style="width: 100%;">
+                        <span>🗑️ Clear Session Memory</span>
+                    </button>
+                    
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
+                        Memory tracks previous turns per session ID. Clearing memory resets context for the active session.
+                    </p>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Right: Interactive Chat Interface -->
+        <section class="glass-card chat-container">
+            
+            <div class="card-header">
+                <h2>💬 Chat with Lia AI</h2>
+                <div class="chat-header-actions">
+                    <span style="font-size: 0.78rem; color: var(--text-secondary);" id="activeSessionBadge">Session: default-session</span>
+                </div>
+            </div>
+
+            <!-- Chat Messages Container -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Assistant Message -->
+                <div class="message bot">
+                    <div class="msg-avatar">✨</div>
+                    <div class="msg-bubble">
+                        <p>Hello! I am <strong>Lia AI</strong>, your digital business mentor and document intelligence assistant for <strong>Shepreneur</strong>.</p>
+                        <p>I answer questions based on your indexed documents, and provide comprehensive guidance on <strong>women empowerment</strong>, <strong>business ideas</strong>, <strong>budget calculations</strong>, <strong>profit estimation</strong>, and <strong>starting your business</strong>!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="suggestions">
+                <div class="suggestion-pill" data-query="What is the 7-step journey in Shepreneur?">💡 7-Step Journey</div>
+                <div class="suggestion-pill" data-query="What are low-cost business ideas for a homemaker with ₹3,000?">💡 ₹3,000 Business Ideas</div>
+                <div class="suggestion-pill" data-query="If my product cost is ₹150 and I want a 40% margin, calculate my selling price and profit">💡 Profit Calculation</div>
+                <div class="suggestion-pill" data-query="Give me a startup budget calculation to start a scented candle business with ₹5,000">💡 Budget Breakdown</div>
+                <div class="suggestion-pill" data-query="Guide me step-by-step on how a woman can start an online tailoring business">💡 Step-by-Step Guide</div>
+            </div>
+
+            <!-- Chat Input Form -->
+            <form class="chat-input-area" id="chatForm">
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="chatInput" 
+                        class="chat-textarea" 
+                        placeholder="Ask a question about your documents..." 
+                        rows="1"
+                        required></textarea>
+                </div>
+                <button type="submit" class="btn-send" id="sendBtn" title="Send message">
+                    <span>➤</span>
+                </button>
+            </form>
+
+        </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
