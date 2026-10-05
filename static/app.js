@@ -218,8 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const msgDiv = document.createElement("div");
                 msgDiv.className = "message bot";
                 const avatar = document.createElement("div");
-                avatar.className = "msg-avatar";
-                avatar.textContent = "✨";
+                avatar.className = "msg-avatar bot-avatar";
+                avatar.innerHTML = '<img src="/static/logo.jpg" alt="Lia AI" class="avatar-img">';
                 const bubble = document.createElement("div");
                 bubble.className = "msg-bubble";
                 msgDiv.appendChild(avatar);
@@ -314,8 +314,12 @@ document.addEventListener("DOMContentLoaded", () => {
         msgDiv.className = `message ${sender}`;
 
         const avatar = document.createElement("div");
-        avatar.className = "msg-avatar";
-        avatar.textContent = sender === "user" ? "👤" : "✨";
+        avatar.className = `msg-avatar ${sender === "bot" ? "bot-avatar" : ""}`;
+        if (sender === "bot") {
+            avatar.innerHTML = '<img src="/static/logo.jpg" alt="Lia AI" class="avatar-img">';
+        } else {
+            avatar.textContent = "👤";
+        }
 
         const bubble = document.createElement("div");
         bubble.className = "msg-bubble";
@@ -343,7 +347,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = "message bot";
         div.innerHTML = `
-            <div class="msg-avatar">✨</div>
+            <div class="msg-avatar bot-avatar">
+                <img src="/static/logo.jpg" alt="Lia AI" class="avatar-img">
+            </div>
             <div class="msg-bubble">
                 <div class="typing-dots">
                     <span class="typing-dot"></span>

@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Marked.js for fast markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" type="image/jpeg" href="/static/logo.jpg">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -19,7 +20,9 @@
     <header class="app-header">
         <div class="header-container">
             <div class="logo-group">
-                <div class="logo-badge">✨</div>
+                <div class="logo-badge">
+                    <img src="/static/logo.jpg" alt="Lia AI Logo" class="logo-img">
+                </div>
                 <div class="logo-text">
                     <h1>Lia AI Assistant</h1>
                     <p>Python LangChain &bull; Supabase pgvector</p>
@@ -110,7 +113,9 @@
             <div class="chat-messages" id="chatMessages">
                 <!-- Welcome Assistant Message -->
                 <div class="message bot">
-                    <div class="msg-avatar">✨</div>
+                    <div class="msg-avatar bot-avatar">
+                        <img src="/static/logo.jpg" alt="Lia AI" class="avatar-img">
+                    </div>
                     <div class="msg-bubble">
                         <p>Hello! I am <strong>Lia AI</strong>, your digital business mentor and document intelligence assistant for <strong>Shepreneur</strong>.</p>
                         <p>I answer questions based on your indexed documents, and provide comprehensive guidance on <strong>women empowerment</strong>, <strong>business ideas</strong>, <strong>budget calculations</strong>, <strong>profit estimation</strong>, and <strong>starting your business</strong>!</p>
